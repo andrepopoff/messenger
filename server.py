@@ -10,14 +10,51 @@ Server functions:
 
 import socket
 import time
+import sys
 
-sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-sock.bind(('', 8888))
-sock.listen(5)
 
-while True:
-    client, address = sock.accept()
-    print('Получен запрос на соединение от', address)
-    time_for_client = time.ctime(time.time()) + '\n'
-    client.send(time_for_client.encode('utf-8'))
-    client.close()
+def get_message(client):
+    """
+    Receives a message from a client
+    """
+    pass
+
+
+def presence_response(presence):
+    """
+    Generates a response to the client
+    """
+    pass
+
+
+def send_message(client, response):
+    """
+    Sends a response to the client
+    """
+    pass
+
+
+if __name__ == '__main__':
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    try:
+        address = sys.argv[1]
+    except IndexError:
+        address = ''
+    try:
+        port = int(sys.argv[2])
+    except IndexError:
+        port = 7777
+    except ValueError:
+        print('Port must be an integer!')
+        sys.exit(0)
+
+    sock.bind((address, port))
+    sock.listen(5)
+
+    while True:
+        client, address = sock.accept()
+        print('Получен запрос на соединение от', address)
+        presence = get_message(client)
+        response = presence_response(presence)
+        send_message(client, response)
+        client.close()
