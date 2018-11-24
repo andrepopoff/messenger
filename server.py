@@ -9,15 +9,25 @@ Server functions:
 """
 
 import socket
-import time
 import sys
+import json
 
 
-def get_message(client):
+def get_message(client_sock):
     """
     Receives a message from a client
     """
-    pass
+    byte_message = client_sock.recv(1024)
+
+    if isinstance(byte_message, bytes):
+        json_message = byte_message.decode('utf-8')
+        message = json.loads(json_message)  # from json to dict
+        if isinstance(message, dict):
+            return message
+        else:
+            raise TypeError
+    else:
+        raise TypeError
 
 
 def presence_response(presence):
@@ -36,10 +46,12 @@ def send_message(client, response):
 
 if __name__ == '__main__':
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
     try:
         address = sys.argv[1]
     except IndexError:
         address = ''
+
     try:
         port = int(sys.argv[2])
     except IndexError:
