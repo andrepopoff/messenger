@@ -20,8 +20,17 @@ def send_to_server(client_socket, message):
         raise TypeError
 
 
-def get_message_from_server():
-    pass
+def get_message_from_server(client_socket):
+    byte_answer = client_socket.recv(1024)
+    if isinstance(byte_answer, bytes):
+        json_answer = byte_answer.decode('utf-8')
+        answer = json.loads(json_answer)
+        if isinstance(answer, dict):
+            return answer
+        else:
+            raise TypeError
+    else:
+        raise TypeError
 
 
 if __name__ == '__main__':
@@ -43,5 +52,5 @@ if __name__ == '__main__':
     sock.connect((address, port))
     message = create_message()
     send_to_server(sock, message)
-    answer = get_message_from_server()
+    answer = get_message_from_server(sock)
     print(answer)
