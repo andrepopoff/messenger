@@ -36,3 +36,9 @@ def test_send_to_server(monkeypatch):
     with raises(TypeError):
         send_to_server('not_a_dict')
 
+
+def test_get_message_from_server(monkeypatch):
+    monkeypatch.setattr('socket.socket', ClientSocket)  # replace the real socket with our class
+    sock = socket.socket()
+    assert get_message_from_server(sock) == {'response': 200}
+
