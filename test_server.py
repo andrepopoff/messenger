@@ -18,3 +18,11 @@ class ClientSocket:
 
     def send(self, message):
         pass
+
+
+def test_get_message(monkeypatch):
+    # replace the real socket with our class
+    monkeypatch.setattr('socket.socket', ClientSocket)
+    sock = socket.socket()
+    assert get_message(sock) == {'response': 200}
+
