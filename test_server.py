@@ -1,5 +1,11 @@
+"""
+Use PyTest for testing
+"""
+
 import socket
 import json
+import time
+
 from server import get_message, prepare_response, send_message
 
 
@@ -21,8 +27,22 @@ class ClientSocket:
 
 
 def test_get_message(monkeypatch):
-    # replace the real socket with our class
-    monkeypatch.setattr('socket.socket', ClientSocket)
+    monkeypatch.setattr('socket.socket', ClientSocket)  # replace the real socket with our class
     sock = socket.socket()
     assert get_message(sock) == {'response': 200}
 
+
+def test_prepare_response():
+    # There is no action key
+    assert prepare_response({'any_key': 'any_answer', 'time': time.time()}) == {'response': 400,
+                                                                                'error': 'Invalid request'}
+    # There is no time key
+    assert prepare_response({'action': 'presence'}) == {'response': 400, 'error': 'Invalid request'}
+    # Key - not 'presence'
+    assert prepare_response({'action': 'any_action', 'time': time.time()}) == {'response': 400,
+                                                                               'error': 'Invalid request'}
+    # Wrong time key format
+    assert prepare_response({'action': 'presence', 'time': 'string_time'}) == {'response': 400,
+                                                                               'error': 'Invalid request'}
+    # All is good
+    assert prepare_response({'action': 'presence', 'time': time.time()}) == {'response': 200}
