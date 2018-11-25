@@ -1,3 +1,14 @@
+"""
+Client functions:
+- create a presence message
+- send message to server
+- receive answer from server
+- read answer from server
+- address - IP address from the server
+- port - TCP-port on the server (by default, uses port 7777)
+
+"""
+
 import socket
 import sys
 import time
