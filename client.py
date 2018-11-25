@@ -1,6 +1,7 @@
 import socket
 import sys
 import time
+import json
 
 
 def create_message():
@@ -10,8 +11,13 @@ def create_message():
     }
 
 
-def send_to_server(message):
-    pass
+def send_to_server(client_socket, message):
+    if isinstance(message, dict):
+        json_message = json.dumps(message)
+        byte_message = json_message.encode('utf-8')
+        client_socket.send(byte_message)
+    else:
+        raise TypeError
 
 
 def get_message_from_server():
@@ -36,6 +42,6 @@ if __name__ == '__main__':
 
     sock.connect((address, port))
     message = create_message()
-    send_to_server(message)
+    send_to_server(sock, message)
     answer = get_message_from_server()
     print(answer)
