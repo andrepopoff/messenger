@@ -1,9 +1,13 @@
 import socket
 import sys
+import time
 
 
 def create_message():
-    pass
+    return {
+        'action': 'presence',
+        'time': time.time()
+    }
 
 
 def send_to_server(message):
@@ -34,5 +38,4 @@ if __name__ == '__main__':
     message = create_message()
     send_to_server(message)
     answer = get_message_from_server()
-    sock.close()
-    print(answer.decode('utf-8'))
+    print(answer)
