@@ -6,6 +6,8 @@ import socket
 import json
 import time
 
+from pytest import raises
+
 from server import get_message, prepare_response, send_message
 
 
@@ -46,3 +48,14 @@ def test_prepare_response():
                                                                                'error': 'Invalid request'}
     # All is good
     assert prepare_response({'action': 'presence', 'time': time.time()}) == {'response': 200}
+
+
+def test_send_message(monkeypatch):
+    monkeypatch.setattr('socket.socket', ClientSocket)
+    sock = socket.socket()
+
+    assert send_message(sock, {'any_key': 'any_value'}) is None
+
+    with raises(TypeError):
+        send_message(sock, 'not_dict')
+        
