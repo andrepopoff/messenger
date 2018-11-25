@@ -33,6 +33,14 @@ def get_message_from_server(client_socket):
         raise TypeError
 
 
+def check_answer(answer):
+    if not isinstance(answer, dict):
+        raise TypeError
+    if 'response' not in answer:
+        raise KeyError
+    return answer
+
+
 if __name__ == '__main__':
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -53,4 +61,5 @@ if __name__ == '__main__':
     message = create_message()
     send_to_server(sock, message)
     answer = get_message_from_server(sock)
+    checked_answer = check_answer(answer)
     print(answer)
