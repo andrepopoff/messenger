@@ -42,3 +42,12 @@ def test_get_message_from_server(monkeypatch):
     sock = socket.socket()
     assert get_message_from_server(sock) == {'response': 200}
 
+
+def test_check_answer():
+    assert check_answer({'response': 200}) == {'response': 200}
+
+    with raises(TypeError):
+        check_answer('not_a_dict')
+
+    with raises(KeyError):
+        check_answer({'not_a_response': 200})
