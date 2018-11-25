@@ -1,8 +1,9 @@
 import socket
+import json
 from server import get_message, prepare_response, send_message
 
 
-class ClientSocket():
+class ClientSocket:
     """
     Class for socket operations
     """
@@ -10,8 +11,10 @@ class ClientSocket():
         pass
 
     def recv(self, l):
-        pass
+        message = {'response': 200}
+        json_message = json.dumps(message)
+        byte_message = json_message.encode('utf-8')
+        return byte_message
 
     def send(self, message):
         pass
-    
