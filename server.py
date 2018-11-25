@@ -40,11 +40,16 @@ def prepare_response(client_message):
     return {'response': 400, 'error': 'Invalid request'}
 
 
-def send_message(client, response):
+def send_message(client_sock, response):
     """
     Sends a response to the client
     """
-    pass
+    if isinstance(response, dict):
+        json_message = json.dumps(response)
+        byte_message = json_message.encode('utf-8')
+        client_sock.send(byte_message)
+    else:
+        raise TypeError
 
 
 if __name__ == '__main__':
