@@ -30,11 +30,14 @@ def get_message(client_sock):
         raise TypeError
 
 
-def presence_response(presence):
+def prepare_response(client_message):
     """
     Generates a response to the client
     """
-    pass
+    if 'action' in client_message and client_message['action'] == 'presence' \
+            and 'time' in client_message and isinstance(client_message['time'], float):
+        return {'response': 200}
+    return {'response': 400, 'error': 'Invalid request'}
 
 
 def send_message(client, response):
@@ -66,7 +69,7 @@ if __name__ == '__main__':
     while True:
         client, address = sock.accept()
         print('Получен запрос на соединение от', address)
-        presence = get_message(client)
-        response = presence_response(presence)
+        message = get_message(client)
+        response = prepare_response(message)
         send_message(client, response)
         client.close()
