@@ -109,14 +109,13 @@ if __name__ == '__main__':
     while True:
         try:
             client, address = sock.accept()
-            print('Получен запрос на соединение от', address)
             message = get_message(client)
             response = prepare_response(message)
             send_message(client, response)
         except OSError:
             pass  # timeout
         else:
-            print('Получен запрос на соединение от', address)
+            print('Сonnection request from', address)
             clients.append(client)
         finally:
             r = []
