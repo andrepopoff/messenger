@@ -15,6 +15,14 @@ import time
 import json
 
 
+def write_messages():
+    pass
+
+
+def read_messages():
+    pass
+
+
 def create_message():
     return {
         'action': 'presence',
@@ -68,9 +76,22 @@ if __name__ == '__main__':
         print('Port must be an integer!')
         sys.exit(0)
 
+    try:
+        mode = sys.argv[3]
+    except IndexError:
+        mode = 'r'
+
     sock.connect((address, port))
     message = create_message()
     send_to_server(sock, message)
     answer = get_message_from_server(sock)
     checked_answer = check_answer(answer)
-    print(answer)
+
+    if answer['response'] == 200:
+        if mode == 'r':
+            read_messages()
+        elif mode == 'w':
+            write_messages()
+        else:
+            raise Exception('Wrong mode!')
+        
