@@ -11,6 +11,7 @@ Server functions:
 import socket
 import sys
 import json
+import select
 
 
 def get_message(client_sock):
@@ -70,6 +71,7 @@ if __name__ == '__main__':
 
     sock.bind((address, port))
     sock.listen(5)
+    sock.settimeout(0.2)
 
     while True:
         client, address = sock.accept()
