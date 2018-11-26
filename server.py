@@ -14,8 +14,21 @@ import json
 import select
 
 
-def read_requests():
-    pass
+def read_requests(clients_for_reading, all_clients):
+    """
+    Reading messages that clients send
+    """
+    messages = []
+    for sock in clients_for_reading:
+        try:
+            message = get_message(sock)
+            print(message)
+            messages.append(message)
+        except:
+            print('Client {} {} has disconnected'.format(sock.fileno(), sock.getpeername()))
+            all_clients.remove(sock)
+
+    return messages
 
 
 def write_responses():
