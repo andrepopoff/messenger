@@ -11,6 +11,39 @@ Server functions:
 import socket
 import sys
 import json
+import select
+
+
+def read_requests(clients_for_reading, all_clients):
+    """
+    Reading messages that clients send
+    """
+    messages = []
+    for sock in clients_for_reading:
+        try:
+            message = get_message(sock)
+            print(message)
+            messages.append(message)
+        except:
+            print('Client {} {} has disconnected'.format(sock.fileno(), sock.getpeername()))
+            all_clients.remove(sock)
+
+    return messages
+
+
+def write_responses(messages, clients_for_writing, all_clients):
+    """
+    Sending messages to clients who are waiting for them
+    """
+    for sock in clients_for_writing:
+        # We will send every message to everyone
+        for message in messages:
+            try:
+                send_message(sock, message)
+            except:
+                print('Client {} {} has disconnected'.format(sock.fileno(), sock.getpeername()))
+                sock.close()
+                all_clients.remove(sock)
 
 
 def get_message(client_sock):
@@ -70,11 +103,27 @@ if __name__ == '__main__':
 
     sock.bind((address, port))
     sock.listen(5)
+    sock.settimeout(0.2)
+    clients = []
 
     while True:
-        client, address = sock.accept()
-        print('Получен запрос на соединение от', address)
-        message = get_message(client)
-        response = prepare_response(message)
-        send_message(client, response)
-        client.close()
+        try:
+            client, address = sock.accept()
+            message = get_message(client)
+            response = prepare_response(message)
+            send_message(client, response)
+        except OSError:
+            pass  # timeout
+        else:
+            print('Сonnection request from', address)
+            clients.append(client)
+        finally:
+            r = []
+            w = []
+            try:
+                r, w, e = select.select(clients, clients, [], 0)
+            except:
+                pass  # Do nothing if a client disconnects
+
+            requests = read_requests(r, clients)
+            write_responses(requests, w, clients)
