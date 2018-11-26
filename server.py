@@ -31,8 +31,19 @@ def read_requests(clients_for_reading, all_clients):
     return messages
 
 
-def write_responses():
-    pass
+def write_responses(messages, clients_for_writing, all_clients):
+    """
+    Sending messages to clients who are waiting for them
+    """
+    for sock in clients_for_writing:
+        # We will send every message to everyone
+        for message in messages:
+            try:
+                send_message(sock, message)
+            except:
+                print('Client {} {} has disconnected'.format(sock.fileno(), sock.getpeername()))
+                sock.close()
+                all_clients.remove(sock)
 
 
 def get_message(client_sock):
@@ -115,5 +126,5 @@ if __name__ == '__main__':
             except:
                 pass  # Do nothing if a client disconnects
 
-            read_requests()
-            write_responses()
+            requests = read_requests(r, clients)
+            write_responses(requests, w, clients)
