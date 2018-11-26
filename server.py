@@ -14,6 +14,14 @@ import json
 import select
 
 
+def read_requests():
+    pass
+
+
+def write_responses():
+    pass
+
+
 def get_message(client_sock):
     """
     Receives a message from a client
@@ -72,11 +80,27 @@ if __name__ == '__main__':
     sock.bind((address, port))
     sock.listen(5)
     sock.settimeout(0.2)
+    clients = []
 
     while True:
-        client, address = sock.accept()
-        print('Получен запрос на соединение от', address)
-        message = get_message(client)
-        response = prepare_response(message)
-        send_message(client, response)
-        client.close()
+        try:
+            client, address = sock.accept()
+            print('Получен запрос на соединение от', address)
+            message = get_message(client)
+            response = prepare_response(message)
+            send_message(client, response)
+        except OSError:
+            pass  # timeout
+        else:
+            print('Получен запрос на соединение от', address)
+            clients.append(client)
+        finally:
+            r = []
+            w = []
+            try:
+                r, w, e = select.select(clients, clients, [], 0)
+            except:
+                pass  # Do nothing if a client disconnects
+
+            read_requests()
+            write_responses()
