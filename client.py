@@ -88,10 +88,10 @@ if __name__ == '__main__':
     checked_answer = check_answer(answer)
 
     if answer['response'] == 200:
+        # depending on the mode we will listen or send messages
         if mode == 'r':
             read_messages()
         elif mode == 'w':
             write_messages()
         else:
             raise Exception('Wrong mode!')
-        
