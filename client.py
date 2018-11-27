@@ -14,6 +14,8 @@ import sys
 import time
 import json
 
+from config import ACTION, PRESENCE, TIME, MSG, TO, FROM, USER, ACCOUNT_NAME, MESSAGE
+
 
 def write_messages(client_sock):
     """
@@ -21,7 +23,7 @@ def write_messages(client_sock):
     """
     while True:
         # text = input('Enter text: ')
-        message = create_message()
+        message = create_message(MSG)
         send_to_server(client_sock, message)
 
 
@@ -34,11 +36,24 @@ def read_messages(client_sock):
         print(message)
 
 
-def create_message():
-    return {
-        'action': 'presence',
-        'time': time.time()
-    }
+def create_message(action, to=None, account_name=None, text=None):
+    if action == PRESENCE:
+        return {
+            ACTION: PRESENCE,
+            TIME: time.time(),
+            USER: {
+                ACCOUNT_NAME: account_name
+            }
+
+        }
+    elif action == MSG:
+        return {
+            ACTION: MSG,
+            TIME: time.time(),
+            TO: to,
+            FROM: account_name,
+            MESSAGE: text
+        }
 
 
 def send_to_server(client_socket, message):
@@ -93,7 +108,7 @@ if __name__ == '__main__':
         mode = 'r'
 
     sock.connect((address, port))
-    message = create_message()
+    message = create_message(PRESENCE)
     send_to_server(sock, message)
     answer = get_message_from_server(sock)
     checked_answer = check_answer(answer)
