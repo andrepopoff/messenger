@@ -46,23 +46,6 @@ def write_responses(messages, clients_for_writing, all_clients):
                 all_clients.remove(sock)
 
 
-def get_message(client_sock):
-    """
-    Receives a message from a client
-    """
-    byte_message = client_sock.recv(1024)
-
-    if isinstance(byte_message, bytes):
-        json_message = byte_message.decode('utf-8')
-        message = json.loads(json_message)  # from json to dict
-        if isinstance(message, dict):
-            return message
-        else:
-            raise TypeError
-    else:
-        raise TypeError
-
-
 def prepare_response(client_message):
     """
     Generates a response to the client
@@ -93,6 +76,23 @@ class Server:
     def bind(self, address, port):
         self.sock.bind((address, port))
 
+    @staticmethod
+    def get_message(client_sock):
+        """
+        Receives a message from a client
+        """
+        byte_message = client_sock.recv(1024)
+
+        if isinstance(byte_message, bytes):
+            json_message = byte_message.decode('utf-8')
+            message = json.loads(json_message)  # from json to dict
+            if isinstance(message, dict):
+                return message
+            else:
+                raise TypeError
+        else:
+            raise TypeError
+
     def listen_forever(self):
         self.sock.listen(10)
         self.sock.settimeout(0.2)
@@ -100,7 +100,7 @@ class Server:
         while True:
             try:
                 client, address = self.sock.accept()
-                message = get_message(client)
+                message = self.get_message(client)
                 response = prepare_response(message)
                 send_message(client, response)
             except OSError:
