@@ -22,8 +22,8 @@ def write_messages(client_sock):
     The client writes a message in an infinite loop.
     """
     while True:
-        # text = input('Enter text: ')
-        message = create_message(MSG)
+        text = input('Enter text: ')
+        message = create_message(MSG, text=text)
         send_to_server(client_sock, message)
 
 
