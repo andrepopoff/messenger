@@ -93,7 +93,8 @@ class Server:
         self.sock.bind((address, port))
 
     def listen_forever(self):
-        pass
+        self.sock.listen(10)
+        self.sock.settimeout(0.2)
 
 
 if __name__ == '__main__':
@@ -114,8 +115,6 @@ if __name__ == '__main__':
     server.bind(address, port)
     server.listen_forever()
 
-    # sock.listen(5)
-    # sock.settimeout(0.2)
     # clients = []
     #
     # while True:
