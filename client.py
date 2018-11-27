@@ -14,12 +14,46 @@ import sys
 import time
 import json
 
+from config import ACTION, PRESENCE, TIME, MSG, TO, FROM, USER, ACCOUNT_NAME, MESSAGE
 
-def create_message():
-    return {
-        'action': 'presence',
-        'time': time.time()
-    }
+
+def write_messages(client_sock):
+    """
+    The client writes a message in an infinite loop.
+    """
+    while True:
+        text = input('Enter text: ')
+        message = create_message(MSG, text=text)
+        send_to_server(client_sock, message)
+
+
+def read_messages(client_sock):
+    """
+    Client reads incoming messages in an infinite loop
+    """
+    while True:
+        message = get_message_from_server(client_sock)
+        print(message)
+
+
+def create_message(action, to=None, account_name=None, text=None):
+    if action == PRESENCE:
+        return {
+            ACTION: PRESENCE,
+            TIME: time.time(),
+            USER: {
+                ACCOUNT_NAME: account_name
+            }
+
+        }
+    elif action == MSG:
+        return {
+            ACTION: MSG,
+            TIME: time.time(),
+            TO: to,
+            FROM: account_name,
+            MESSAGE: text
+        }
 
 
 def send_to_server(client_socket, message):
@@ -68,9 +102,22 @@ if __name__ == '__main__':
         print('Port must be an integer!')
         sys.exit(0)
 
+    try:
+        mode = sys.argv[3]
+    except IndexError:
+        mode = 'r'
+
     sock.connect((address, port))
-    message = create_message()
+    message = create_message(PRESENCE)
     send_to_server(sock, message)
     answer = get_message_from_server(sock)
     checked_answer = check_answer(answer)
-    print(answer)
+
+    if answer['response'] == 200:
+        # depending on the mode we will listen or send messages
+        if mode == 'r':
+            read_messages(sock)
+        elif mode == 'w':
+            write_messages(sock)
+        else:
+            raise Exception('Wrong mode!')
