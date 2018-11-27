@@ -19,8 +19,13 @@ def write_messages():
     pass
 
 
-def read_messages():
-    pass
+def read_messages(client_sock):
+    """
+    Client reads incoming messages in an infinite loop
+    """
+    while True:
+        message = get_message_from_server(client_sock)
+        print(message)
 
 
 def create_message():
@@ -90,7 +95,7 @@ if __name__ == '__main__':
     if answer['response'] == 200:
         # depending on the mode we will listen or send messages
         if mode == 'r':
-            read_messages()
+            read_messages(sock)
         elif mode == 'w':
             write_messages()
         else:
