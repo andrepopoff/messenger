@@ -14,7 +14,7 @@ FROM = 'from'
 MESSAGE = 'message'
 
 # Values
-PRESENSE = 'presence'  # service message for notifying the server about the presence of a client online
+PRESENCE = 'presence'  # service message for notifying the server about the presence of a client online
 MSG = 'msg'  # simple message to the user or chat
 
 # Response codes from server
