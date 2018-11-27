@@ -15,8 +15,14 @@ import time
 import json
 
 
-def write_messages():
-    pass
+def write_messages(client_sock):
+    """
+    The client writes a message in an infinite loop.
+    """
+    while True:
+        # text = input('Enter text: ')
+        message = create_message()
+        send_to_server(client_sock, message)
 
 
 def read_messages(client_sock):
@@ -97,6 +103,6 @@ if __name__ == '__main__':
         if mode == 'r':
             read_messages(sock)
         elif mode == 'w':
-            write_messages()
+            write_messages(sock)
         else:
             raise Exception('Wrong mode!')
