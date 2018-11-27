@@ -46,18 +46,6 @@ def write_responses(messages, clients_for_writing, all_clients):
                 all_clients.remove(sock)
 
 
-def send_message(client_sock, response):
-    """
-    Sends a response to the client
-    """
-    if isinstance(response, dict):
-        json_message = json.dumps(response)
-        byte_message = json_message.encode('utf-8')
-        client_sock.send(byte_message)
-    else:
-        raise TypeError
-
-
 class Server:
     def __init__(self):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -93,6 +81,18 @@ class Server:
             return {'response': 200}
         return {'response': 400, 'error': 'Invalid request'}
 
+    @staticmethod
+    def send_message(client_sock, response):
+        """
+        Sends a response to the client
+        """
+        if isinstance(response, dict):
+            json_message = json.dumps(response)
+            byte_message = json_message.encode('utf-8')
+            client_sock.send(byte_message)
+        else:
+            raise TypeError
+
     def listen_forever(self):
         self.sock.listen(10)
         self.sock.settimeout(0.2)
@@ -102,7 +102,7 @@ class Server:
                 client, address = self.sock.accept()
                 message = self.get_message(client)
                 response = self.prepare_response(message)
-                send_message(client, response)
+                self.send_message(client, response)
             except OSError:
                 pass  # timeout
             else:
