@@ -9,12 +9,13 @@ USER = 'user'
 ACCOUNT_NAME = 'account_name'
 RESPONSE = 'response'
 ERROR = 'error'
+TO = 'to'
+FROM = 'from'
+MESSAGE = 'message'
 
 # Values
 PRESENSE = 'presence'  # service message for notifying the server about the presence of a client online
 MSG = 'msg'  # simple message to the user or chat
-TO = 'to'
-FROM = 'from'
 
 # Response codes from server
 BASIC_NOTICE = 100
