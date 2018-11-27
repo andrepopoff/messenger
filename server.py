@@ -85,9 +85,18 @@ def send_message(client_sock, response):
         raise TypeError
 
 
-if __name__ == '__main__':
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+class Server:
+    def __init__(self):
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
+    def bind(self, address, port):
+        self.sock.bind((address, port))
+
+    def listen_forever(self):
+        pass
+
+
+if __name__ == '__main__':
     try:
         address = sys.argv[1]
     except IndexError:
@@ -101,29 +110,32 @@ if __name__ == '__main__':
         print('Port must be an integer!')
         sys.exit(0)
 
-    sock.bind((address, port))
-    sock.listen(5)
-    sock.settimeout(0.2)
-    clients = []
+    server = Server()
+    server.bind(address, port)
+    server.listen_forever()
 
-    while True:
-        try:
-            client, address = sock.accept()
-            message = get_message(client)
-            response = prepare_response(message)
-            send_message(client, response)
-        except OSError:
-            pass  # timeout
-        else:
-            print('Сonnection request from', address)
-            clients.append(client)
-        finally:
-            r = []
-            w = []
-            try:
-                r, w, e = select.select(clients, clients, [], 0)
-            except:
-                pass  # Do nothing if a client disconnects
-
-            requests = read_requests(r, clients)
-            write_responses(requests, w, clients)
+    # sock.listen(5)
+    # sock.settimeout(0.2)
+    # clients = []
+    #
+    # while True:
+    #     try:
+    #         client, address = sock.accept()
+    #         message = get_message(client)
+    #         response = prepare_response(message)
+    #         send_message(client, response)
+    #     except OSError:
+    #         pass  # timeout
+    #     else:
+    #         print('Сonnection request from', address)
+    #         clients.append(client)
+    #     finally:
+    #         r = []
+    #         w = []
+    #         try:
+    #             r, w, e = select.select(clients, clients, [], 0)
+    #         except:
+    #             pass  # Do nothing if a client disconnects
+    #
+    #         requests = read_requests(r, clients)
+    #         write_responses(requests, w, clients)
