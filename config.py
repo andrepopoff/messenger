@@ -11,12 +11,12 @@ RESPONSE = 'response'
 ERROR = 'error'
 
 # Values
-PRESENSE = 'presence'
-MSG = 'message'
+PRESENSE = 'presence'  # service message for notifying the server about the presence of a client online
+MSG = 'msg'  # simple message to the user or chat
 TO = 'to'
 FROM = 'from'
 
-# Response codes
+# Response codes from server
 BASIC_NOTICE = 100
 OK = 200
 ACCEPTED = 202
