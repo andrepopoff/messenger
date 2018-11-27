@@ -88,6 +88,7 @@ def send_message(client_sock, response):
 class Server:
     def __init__(self):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.clients = []
 
     def bind(self, address, port):
         self.sock.bind((address, port))
@@ -115,7 +116,6 @@ if __name__ == '__main__':
     server.bind(address, port)
     server.listen_forever()
 
-    # clients = []
     #
     # while True:
     #     try:
