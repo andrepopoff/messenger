@@ -97,6 +97,28 @@ class Server:
         self.sock.listen(10)
         self.sock.settimeout(0.2)
 
+        while True:
+            try:
+                client, address = self.sock.accept()
+                message = get_message(client)
+                response = prepare_response(message)
+                send_message(client, response)
+            except OSError:
+                pass  # timeout
+            else:
+                print('Сonnection request from', address)
+                self.clients.append(client)
+            finally:
+                r = []
+                w = []
+                try:
+                    r, w, e = select.select(self.clients, self.clients, [], 0)
+                except:
+                    pass  # Do nothing if a client disconnects
+
+                requests = read_requests(r, self.clients)
+                write_responses(requests, w, self.clients)
+
 
 if __name__ == '__main__':
     try:
@@ -115,26 +137,3 @@ if __name__ == '__main__':
     server = Server()
     server.bind(address, port)
     server.listen_forever()
-
-    #
-    # while True:
-    #     try:
-    #         client, address = sock.accept()
-    #         message = get_message(client)
-    #         response = prepare_response(message)
-    #         send_message(client, response)
-    #     except OSError:
-    #         pass  # timeout
-    #     else:
-    #         print('Сonnection request from', address)
-    #         clients.append(client)
-    #     finally:
-    #         r = []
-    #         w = []
-    #         try:
-    #             r, w, e = select.select(clients, clients, [], 0)
-    #         except:
-    #             pass  # Do nothing if a client disconnects
-    #
-    #         requests = read_requests(r, clients)
-    #         write_responses(requests, w, clients)
