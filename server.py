@@ -46,16 +46,6 @@ def write_responses(messages, clients_for_writing, all_clients):
                 all_clients.remove(sock)
 
 
-def prepare_response(client_message):
-    """
-    Generates a response to the client
-    """
-    if 'action' in client_message and client_message['action'] == 'presence' \
-            and 'time' in client_message and isinstance(client_message['time'], float):
-        return {'response': 200}
-    return {'response': 400, 'error': 'Invalid request'}
-
-
 def send_message(client_sock, response):
     """
     Sends a response to the client
@@ -93,6 +83,16 @@ class Server:
         else:
             raise TypeError
 
+    @staticmethod
+    def prepare_response(client_message):
+        """
+        Generates a response to the client
+        """
+        if 'action' in client_message and client_message['action'] == 'presence' \
+                and 'time' in client_message and isinstance(client_message['time'], float):
+            return {'response': 200}
+        return {'response': 400, 'error': 'Invalid request'}
+
     def listen_forever(self):
         self.sock.listen(10)
         self.sock.settimeout(0.2)
@@ -101,7 +101,7 @@ class Server:
             try:
                 client, address = self.sock.accept()
                 message = self.get_message(client)
-                response = prepare_response(message)
+                response = self.prepare_response(message)
                 send_message(client, response)
             except OSError:
                 pass  # timeout
