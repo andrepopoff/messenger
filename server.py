@@ -115,7 +115,7 @@ class Server:
                     pass  # Do nothing if a client disconnects
 
                 requests = self.read_requests(r)
-                write_responses(requests, w, self.clients)
+                self.write_responses(requests, w)
 
 
 if __name__ == '__main__':
