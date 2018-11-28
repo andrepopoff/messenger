@@ -14,21 +14,6 @@ import json
 import select
 
 
-def write_responses(messages, clients_for_writing, all_clients):
-    """
-    Sending messages to clients who are waiting for them
-    """
-    for sock in clients_for_writing:
-        # We will send every message to everyone
-        for message in messages:
-            try:
-                send_message(sock, message)
-            except:
-                print('Client {} {} has disconnected'.format(sock.fileno(), sock.getpeername()))
-                sock.close()
-                all_clients.remove(sock)
-
-
 class Server:
     def __init__(self):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -91,6 +76,20 @@ class Server:
                 self.clients.remove(sock)
 
         return messages
+
+    def write_responses(self, messages, clients_for_writing):
+        """
+        Sending messages to clients who are waiting for them
+        """
+        for sock in clients_for_writing:
+            # We will send every message to everyone
+            for message in messages:
+                try:
+                    self.send_message(sock, message)
+                except:
+                    print('Client {} {} has disconnected'.format(sock.fileno(), sock.getpeername()))
+                    sock.close()
+                    self.clients.remove(sock)
 
     def listen_forever(self):
         self.sock.listen(10)
