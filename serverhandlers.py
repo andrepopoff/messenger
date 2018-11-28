@@ -1,4 +1,5 @@
 import json
+from config import ACTION, PRESENCE, TIME, RESPONSE, OK, WRONG_REQUEST, ERROR
 
 
 class MessageHandler:
@@ -24,10 +25,10 @@ class MessageHandler:
         """
         Generates a response to the client
         """
-        if 'action' in client_message and client_message['action'] == 'presence' \
-                and 'time' in client_message and isinstance(client_message['time'], float):
-            return {'response': 200}
-        return {'response': 400, 'error': 'Invalid request'}
+        if ACTION in client_message and client_message[ACTION] == PRESENCE \
+                and TIME in client_message and isinstance(client_message[TIME], float):
+            return {RESPONSE: OK}
+        return {RESPONSE: WRONG_REQUEST, ERROR: 'Invalid request'}
 
     @staticmethod
     def send_message(client_sock, response):
