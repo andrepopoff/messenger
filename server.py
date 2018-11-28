@@ -14,14 +14,7 @@ import json
 import select
 
 
-class Server:
-    def __init__(self):
-        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.clients = []
-
-    def bind(self, address, port):
-        self.sock.bind((address, port))
-
+class MessageHandler():
     @staticmethod
     def get_message(client_sock):
         """
@@ -61,7 +54,7 @@ class Server:
         else:
             raise TypeError
 
-    def read_requests(self, clients_for_reading):
+    def read_requests(self, clients_for_reading, all_clients):
         """
         Reading messages that clients send
         """
@@ -73,11 +66,11 @@ class Server:
                 messages.append(message)
             except:
                 print('Client {} {} has disconnected'.format(sock.fileno(), sock.getpeername()))
-                self.clients.remove(sock)
+                all_clients.remove(sock)
 
         return messages
 
-    def write_responses(self, messages, clients_for_writing):
+    def write_responses(self, messages, clients_for_writing, all_clients):
         """
         Sending messages to clients who are waiting for them
         """
@@ -89,7 +82,17 @@ class Server:
                 except:
                     print('Client {} {} has disconnected'.format(sock.fileno(), sock.getpeername()))
                     sock.close()
-                    self.clients.remove(sock)
+                    all_clients.remove(sock)
+
+
+class Server:
+    def __init__(self, message_handler):
+        self.message_handler = message_handler
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.clients = []
+
+    def bind(self, address, port):
+        self.sock.bind((address, port))
 
     def listen_forever(self):
         self.sock.listen(10)
@@ -98,9 +101,9 @@ class Server:
         while True:
             try:
                 client, address = self.sock.accept()
-                message = self.get_message(client)
-                response = self.prepare_response(message)
-                self.send_message(client, response)
+                message = self.message_handler.get_message(client)
+                response = self.message_handler.prepare_response(message)
+                self.message_handler.send_message(client, response)
             except OSError:
                 pass  # timeout
             else:
@@ -114,8 +117,8 @@ class Server:
                 except:
                     pass  # Do nothing if a client disconnects
 
-                requests = self.read_requests(r)
-                self.write_responses(requests, w)
+                requests = self.message_handler.read_requests(r, self.clients)
+                self.message_handler.write_responses(requests, w, self.clients)
 
 
 if __name__ == '__main__':
@@ -132,6 +135,7 @@ if __name__ == '__main__':
         print('Port must be an integer!')
         sys.exit(0)
 
-    server = Server()
+    message_handler = MessageHandler()
+    server = Server(message_handler)
     server.bind(address, port)
     server.listen_forever()
