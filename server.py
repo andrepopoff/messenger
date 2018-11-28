@@ -14,23 +14,6 @@ import json
 import select
 
 
-def read_requests(clients_for_reading, all_clients):
-    """
-    Reading messages that clients send
-    """
-    messages = []
-    for sock in clients_for_reading:
-        try:
-            message = get_message(sock)
-            print(message)
-            messages.append(message)
-        except:
-            print('Client {} {} has disconnected'.format(sock.fileno(), sock.getpeername()))
-            all_clients.remove(sock)
-
-    return messages
-
-
 def write_responses(messages, clients_for_writing, all_clients):
     """
     Sending messages to clients who are waiting for them
@@ -93,6 +76,22 @@ class Server:
         else:
             raise TypeError
 
+    def read_requests(self, clients_for_reading):
+        """
+        Reading messages that clients send
+        """
+        messages = []
+        for sock in clients_for_reading:
+            try:
+                message = self.get_message(sock)
+                print(message)
+                messages.append(message)
+            except:
+                print('Client {} {} has disconnected'.format(sock.fileno(), sock.getpeername()))
+                self.clients.remove(sock)
+
+        return messages
+
     def listen_forever(self):
         self.sock.listen(10)
         self.sock.settimeout(0.2)
@@ -116,7 +115,7 @@ class Server:
                 except:
                     pass  # Do nothing if a client disconnects
 
-                requests = read_requests(r, self.clients)
+                requests = self.read_requests(r)
                 write_responses(requests, w, self.clients)
 
 
